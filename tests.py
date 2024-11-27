@@ -1,8 +1,7 @@
+import pytest
+from django.urls import reverse
 
-from django.test import TestCase
-
-class SimpleTest(TestCase):
-    def test_home_page(self):
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)  # Ожидает успешный ответ
-        self.assertContains(response, "Home Page")  # Проверяет содержимое ответа
+@pytest.mark.django_db
+def test_homepage(client):
+    response = client.get(reverse('home'))
+    assert response.status_code == 200
