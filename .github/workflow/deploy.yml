@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Проверка кода
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Установка зависимостей
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        pip install pytest pytest-django
+
+    # Запуск тестов
+    - name: Run tests
+      run: |
+        source venv/bin/activate
+        pytest
+
+    # Деплой на сервер
+    - name: Deploy to server
+      run: |
+        ssh vi@192.168.142.137 <<EOF
+        cd /home/vi/lb3
+        git pull origin main
+        source venv/bin/activate
+        python manage.py migrate
+        sudo systemctl restart gunicorn
+        EOF
+
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v0.1.9
+      with:
+        host: 192.168.142.137
+        username: vi
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /home/vi/lb3
+          git pull origin main
+          source venv/bin/activate
+          pip install -r requirements.txt
+          python manage.py migrate
+          sudo systemctl restart gunicorn
+      
