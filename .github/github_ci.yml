@@ -1,7 +1,0 @@
-#test
-stages:
-  - test
-test_job:
-  stage: test
-  script:
-    - echo "Test job is running"
