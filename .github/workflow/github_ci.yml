@@ -1,15 +1,45 @@
+name: CI/CD Pipeline
 
-#test
-name: CI
-
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  test-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+    # Проверка кода
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Run a one-line script
-        run: echo "Hello, world!"
+    # Установка зависимостей
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        pip install pytest pytest-django
+
+    # Запуск тестов
+    - name: Run tests
+      run: |
+        source venv/bin/activate
+        pytest
+
+    # Деплой на сервер
+    - name: Deploy to server
+      run: |
+        ssh user@your_server_ip <<EOF
+        cd /path/to/your/project
+        git pull origin main
+        source venv/bin/activate
+        python manage.py migrate
+        sudo systemctl restart gunicorn
+        EOF
