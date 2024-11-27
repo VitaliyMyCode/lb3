@@ -36,7 +36,7 @@ jobs:
     # Деплой на сервер
     - name: Deploy to server
       run: |
-        ssh user@your_server_ip <<EOF
+        ssh vi@192.168.142.137 <<EOF
         cd /home/vi/lb3
         git pull origin main
         source venv/bin/activate
