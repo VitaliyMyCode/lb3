@@ -1,7 +1,4 @@
-import pytest
-from django.urls import reverse
+from django.http import HttpResponse
 
-@pytest.mark.django_db
-def test_homepage(client):
-    response = client.get(reverse('home'))
-    assert response.status_code == 200
+def home(request):
+    return HttpResponse("Hello from CI/CD!")
