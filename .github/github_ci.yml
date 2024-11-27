@@ -1,3 +1,4 @@
+#test
 stages:
   - test
 test_job:
